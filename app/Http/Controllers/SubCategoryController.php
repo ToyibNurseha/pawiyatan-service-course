@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Chapter;
 use App\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,10 +11,16 @@ class SubCategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $category = SubCategory::all();
+        $category = SubCategory::query();
+        $categoryId = $request->query('course_category_id');
+
+        $category->when($categoryId, function($query) use ($categoryId) {
+            return $query->where('course_id', '=', $categoryId);
+        });
+
         return response()->json([
             'status' => 'success',
-            'data' => $category
+            'data' => $category->get()
         ]);
     }
 
